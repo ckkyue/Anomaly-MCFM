@@ -10,5 +10,4 @@ pip install numpy
 pip install seaborn
 pip install scikit-learn
 pip install tqdm
-pip install uproot
 ```
