@@ -4,8 +4,7 @@ This repository contains the code (Z Real Data.ipynb) that compares MCFM theoret
 # MCFM-10.3
 To install MCFM-10.3, please refer to the instructions provided at https://mcfm.fnal.gov/. The input configurations of the MCFM calculations can be controlled by modifying the Bin/input_z.ini file, and adjustments to the binning of the produced histograms can be made using nplotter_Z_new.f90.
 
-The MCFM-10.3 folder contains codes that define input configurations and binning of histograms produced in MCFM.
-To start the program, first go to Bin
+The MCFM-10.3 folder contains codes that define input configurations and binning of histograms produced in MCFM. To start the program, first go to Bin
 ```bash
 cd MCFM-10.3/Bin
 ```
