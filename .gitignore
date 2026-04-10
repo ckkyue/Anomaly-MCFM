@@ -1,0 +1,12 @@
+# macOS system files
+.DS_Store
+**/.DS_Store
+
+# NumPy files (in case you use them later)
+*.npy
+*.npz
+
+# Common ignores for Python/ML projects
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
