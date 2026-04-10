@@ -1,29 +1,50 @@
 # Anomaly-MCFM
-This repository contains the code (Z Real Data.ipynb) that compares MCFM theoretical calculations with CMS pseudodata and detects anomalies using the One-Class SVM machine learning method. The generated figures are stored in the "Figure MCFM Real Data" folder. Additionally, the "Result MCFM Real Data" folder contains the CMS pseudodata and MCFM results.
+This repository compares MCFM predictions for the Z-boson observables against CMS pseudodata and then applies a One-Class SVM to flag anomalous bins. The main workflow lives in [Z Real Data.ipynb](Z%20Real%20Data.ipynb), the generated plots are written to [Figure MCFM Real Data](Figure%20MCFM%20Real%20Data), and the input/output data used by the notebook is stored in [Result MCFM Real Data](Result%20MCFM%20Real%20Data).
 
-## MCFM-10.3
-To install MCFM-10.3, please refer to the instructions provided at https://mcfm.fnal.gov/. The input configurations of the MCFM calculations can be controlled by modifying the Bin/input_z.ini file, and adjustments to the binning of the produced histograms can be made using nplotter_Z_new.f90.
+## Repository Layout
+- [Z Real Data.ipynb](Z%20Real%20Data.ipynb): notebook that loads the CMS pseudodata, reads the MCFM text outputs, compares theory to data, and runs anomaly detection.
+- [MCFM-10.3](MCFM-10.3): local MCFM source tree and the Z-process input configuration.
+- [Result MCFM Real Data](Result%20MCFM%20Real%20Data): CMS pseudodata, binned MCFM outputs, and intermediate text results used by the notebook.
+- [Figure MCFM Real Data](Figure%20MCFM%20Real%20Data): saved comparison plots and novelty-detection figures.
 
-The MCFM-10.3 folder contains codes that define input configurations and binning of histograms produced in MCFM. To start the program, first go to Bin
+## Workflow
+1. Build and run MCFM from [MCFM-10.3/Bin](MCFM-10.3/Bin) using the Z-process input file.
+2. Open [Z Real Data.ipynb](Z%20Real%20Data.ipynb) to load the HDF5 pseudodata and the generated MCFM text files.
+3. Compare the CMS reference distribution to MCFM predictions for `pT` and `|Y|`.
+4. Run the One-Class SVM scans to identify bins that behave differently from the training distribution.
+5. Review the saved figures in [Figure MCFM Real Data](Figure%20MCFM%20Real%20Data).
+
+## Running MCFM
+The MCFM inputs for this study are defined in [MCFM-10.3/Bin/input_Z.ini](MCFM-10.3/Bin/input_Z.ini). The custom histogram binning used by the notebook is implemented in [MCFM-10.3/src/User/nplotter_Z_new.f90](MCFM-10.3/src/User/nplotter_Z_new.f90).
+
+From the MCFM binary directory, build and run the Z configuration with:
+
 ```bash
 cd MCFM-10.3/Bin
+make -j256
+export OMP_STACKSIZE=512000
+./mcfm input_Z.ini
 ```
-and run
-```bash
-make -j256 ; export OMP_STACKSIZE=512000 ; ./mcfm input_Z.ini
-```
-which you should replace input_Z.ini with the file that provides the input configuration.
 
-## "Result MCFM Real Data" Folder
-The CMS pseudodata is stored in the fitresult_prefit.hdf5 file, which needs to be opened using h5py. The other .txt files are the MCFM results.
+If you use a different input file, replace `input_Z.ini` with the appropriate configuration file.
 
-## Libraries
-Ensure that you have installed the following libraries before running Z Real Data.ipynb:
+## Data Files
+- `fitresult_prefit.hdf5` is the CMS pseudodata file read by the notebook through `h5py`.
+- The `Z_data_*.txt` files are the MCFM outputs used for the comparisons.
+- The filenames encode the PDF set (`NNPDF31` or `MSHT20`), perturbative order (`resNLOp` or `resNNLO`), and the observable (`pT` or `eta`).
+- The `pT_3` to `pT_12` files are the binned slices used in the bin-by-bin comparison and anomaly detection steps.
+
+## Python Dependencies
+The notebook imports the following Python packages:
+
 ```bash
-pip install h5py
-pip install matplotlib
-pip install numpy
-pip install seaborn
-pip install scikit-learn
-pip install tqdm
+pip install h5py matplotlib numpy seaborn scikit-learn tqdm
 ```
+
+## Outputs
+- The comparison plots `sigma vs pT`, `sigma vs abs(Y)`, and `sigma vs bin` are written to [Figure MCFM Real Data](Figure%20MCFM%20Real%20Data).
+- The novelty-detection plots are saved in the same folder, one image per parameter choice and PDF/order combination.
+
+## Notes
+- The notebook assumes the repository root as the working directory.
+- The custom MCFM plotter uses the `pt34_fine` and `y34` histograms, plus the `pT` slice histograms used for the anomaly scan.
